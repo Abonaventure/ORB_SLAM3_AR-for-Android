@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Map</title>
+    <script src="../js/time.js" type="text/javascript"></script>
+    <link href="../css/category.css" type="text/css" rel="stylesheet" />
+    <style type="text/css">
+        .content {
+            width: 72%;
+            height: 85%;
+            min-height: 270px;
+        }
+
+        .introduce {
+            background-color: gray;
+        }
+    </style>
+
+    <meta charset="utf-8" />
+</head>
+<body style="background-image:url('../image/Map/Map.jpg')">
+    <div class="top">
+        <a href="Map.html"><div class="top_title" style="color:blue"><marquee direction="left" behavior="scroll" scrollamount="3" scrolldelay="0" loop="-1" width="400px" height="40px">欢迎进入我的主页—地图网址</marquee></div></a>
+
+        <div class="time" id="time" style="color:chartreuse;">
+            <script>
+                setInterval("time()", 1000);
+            </script>
+        </div>
+    </div>
+    <div class="container"></div>
+    <table class="content" cellspacing="10" style="table-layout:fixed">
+        <tr>
+            <td>
+                <a href="https://map.baidu.com/" target="_blank" title="百度地图">
+                    <div class="combine_website">
+                        <div class="website" style="background:url('../image/Map/baiduditu.png');background-size: 100% 100%;"></div>
+                        <div class="introduce" id="introduce">百度地图</div>
+                    </div>
+                </a>
+            </td>
+            <td>
+                <a href="https://www.amap.com/" target="_blank" title="高德地图">
+                    <div class="combine_website">
+                        <div class="website" style="background:url('../image/Map/gaodeditu.png');background-size: 100% 100%;"></div>
+                        <div class="introduce" id="introduce">高德地图</div>
+                    </div>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="http://www.google.cn/maps" target="_blank" title="谷歌地图">
+                    <div class="combine_website">
+                        <div class="website" style="background:url('../image/Map/gugeditu.png');background-size: 100% 100%;"></div>
+                        <div class="introduce" id="introduce">谷歌地图</div>
+                    </div>
+                </a>
+            </td>
+            <td>
+                <a href="http://map.qq.com/" target="_blank" title="腾讯地图">
+                    <div class="combine_website">
+                        <div class="website" style="background:url('../image/Map/tengxunditu.png');background-size: 100% 100%;"></div>
+                        <div class="introduce" id="introduce">腾讯地图</div>
+                    </div>
+                </a>
+            </td>
+        </tr>
+    </table>
+    <div class="bottom">
+        <div class="CopyRight">版权所有©中国地质大学(北京)信息工程学院地理信息科学2015级 赵林峰</div>
+    </div>
+</body>
+</html>

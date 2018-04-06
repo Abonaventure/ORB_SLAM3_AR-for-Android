@@ -1,0 +1,144 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-repeat: no-repeat;
+    background-attachment: fixed,fixed;
+    background-size: cover;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-position: center center;
+    position: relative;
+}
+
+.top {
+    /*position:relative;*/
+    text-align: center;
+    top: 0px;
+    width: 100%;
+    min-height: 40px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.bottom {
+    /*position:relative;*/
+    float: left;
+    text-align: center;
+    /*bottom: 0px;*/
+    width: 100%;
+    min-height: 40px;
+    height: 40px;
+    background: #184481;
+    opacity: 0.7;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 80px);
+    min-height: 450px;
+}
+
+.content {
+    position: absolute;
+    margin: auto;
+    width: 75%;
+    height: 60%;
+    min-height: 270px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.combine_website {
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 100%;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    transition: margin 0.1s;
+}
+
+.website {
+    width: 100%;
+    height: 85%;
+    position: relative;
+    float: left;
+    z-index: 20;
+    border: 0px solid black;
+    border-radius: 7px;
+    color: black;
+    background-repeat: no-repeat;
+}
+
+.introduce {
+    width: 100%;
+    height: 15%;
+    position: relative;
+    float: left;
+    background-color: blue;
+    text-align: center;
+    font-size: initial;
+    font-family: Microsoft YaHei;
+    font-weight: bolder;
+    color: black;
+    opacity: 0.75;
+    transition: opacity 0.5s;
+}
+
+a:hover .introduce {
+    opacity: 1;
+}
+
+.combine_website:hover {
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-top: 0%;
+    margin-bottom: 0%;
+    cursor: pointer;
+}
+
+.top a {
+    text-decoration: none;
+    font: 25px bolder;
+    color: #ff5e00;
+    line-height: 40px;
+}
+
+    .top a .top_title {
+        display: inline-block;
+    }
+
+.top .time {
+    z-index: 300;
+    height: 40px;
+    max-width: 50%;
+    width: 340px;
+    right: 0px;
+    line-height: 40px;
+    font: 32px bold;
+    display: inline-block;
+    float: right;
+    color: #cac5bc;
+}
+
+.bottom .CopyRight {
+    color: white;
+    line-height: 40px;
+    text-align: center;
+    font-family: \5FAE\8F6F\96C5\9ED1,sans-serif;
+    font-size: 14px;
+}
