@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>实现底图的切换</title>
+    <link href="http://localhost/arcgis_js_api/library/3.23/3.23/esri/css/esri.css"
+        rel="stylesheet" type="text/css" />
+    <link href="http://localhost/arcgis_js_api/library/3.23/3.23/dijit/themes/tundra/tundra.css"
+        rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://localhost/arcgis_js_api/library/3.23/3.23/init.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .MapClass {
+            width: 100%;
+            height: 100%;
+            margin: auto;
+            position: relative;
+        }
+
+        #LayerDiv {
+            width: 462px;
+            height: 80px;
+            margin: 0px;
+            padding: 0px;
+            position: absolute;
+            bottom: 45px;
+            right: 0px;
+            z-index: 50;
+        }
+        .layerClass {
+            padding: 0px;
+            width: 150px;
+            margin-left: 1px;
+            margin-right: 1px;
+            height: 100%;
+            z-index: 100;
+            border: 1px solid black;
+            float: left;
+            cursor: pointer;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            outline:none;
+        }
+    </style>
+    <script type="text/javascript">
+        var MyMap;
+        require(["esri/map", "esri/dijit/OverviewMap", "dojo/ready"],
+                function (Map, OverviewMap, ready) {
+                    ready(function () {
+                        MyMap = new Map("MyMapDiv");
+                        var mapUrlNames = ["ESRI_StreetMap_World_2D",
+                            "ESRI_Imagery_World_2D", "NGS_Topo_US_2D"];
+                        var layerId = ["layer1", "layer2", "layer3"];
+                        var layerString = "";
+
+                        //添加图层到MyMap中
+                        for (var i = 0; i < mapUrlNames.length; i++) {
+                            var MyTiledMapServiceLayer = new esri.layers.ArcGISTiledMapServiceLayer(
+                                "http://services.arcgisonline.com/ArcGIS/rest/services/" + mapUrlNames[i] + "/MapServer");
+                            MyTiledMapServiceLayer.id = layerId[i];
+                            if (i == 0) {
+                                MyTiledMapServiceLayer.visible = true;
+                            }
+                            else
+                            {
+                                MyTiledMapServiceLayer.visible = false;
+                            }
+                            MyMap.addLayer(MyTiledMapServiceLayer);
+
+                            //添加图层块到HTML中
+                            layerString += '<button type="button" id="'+layerId[i]+'" class="layerClass" style="background: url(' +"'image/"+
+                                mapUrlNames[i] + ".png'"+'); background-size: 100% 100%;"'+'onclick="LoadLayer(this.id)" ' +
+                                'onfocus="FocusLayer(this.id)" onblur="BlurLayer(this.id)"></button>'
+                        }
+
+                        $('#LayerDiv').html(layerString);
+                    });
+                });
+
+        function LoadLayer(layerId) {
+            var layersId = MyMap.layerIds;
+            for (var i = 0; i < layersId.length; i++) {
+                if (layersId[i] === layerId) {
+                    MyMap.getLayer(layersId[i]).setVisibility(true);
+                }
+                else {
+                    MyMap.getLayer(layersId[i]).setVisibility(false);
+                }
+            }
+        }
+        
+        function FocusLayer(layerId)
+        {
+            $('#' + layerId).css({ 'border-color': 'red', 'opacity': '1' });
+        }
+
+        function BlurLayer(layerId)
+        {
+            $('#' + layerId).css({ 'border-color': 'black', 'opacity': '0.8' });
+        }
+
+    </script>
+    <meta charset="utf-8" />
+</head>
+<body class="tundra">
+    <div id="MyMapDiv" class="MapClass">
+    </div>
+    <div id="LayerDiv">
+    </div>
+</body>
+</html>

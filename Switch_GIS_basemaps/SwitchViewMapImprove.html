@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>实现底图的切换</title>
+    <link href="http://localhost/arcgis_js_api/library/3.23/3.23/esri/css/esri.css"
+        rel="stylesheet" type="text/css" />
+    <link href="http://localhost/arcgis_js_api/library/3.23/3.23/dijit/themes/tundra/tundra.css"
+        rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://localhost/arcgis_js_api/library/3.23/3.23/init.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .MapClass {
+            width: 100%;
+            height: 100%;
+            margin: auto;
+            position: relative;
+        }
+
+        .BaseMapClass {
+            width: 462px;
+            height: 80px;
+            margin: 0px;
+            padding: 0px;
+            position: absolute;
+            bottom: 45px;
+            right: 0px;
+            z-index: 50;
+        }
+
+        #layer1 {
+            border-color: red;
+        }
+
+        .BaseMapDivClass {
+            padding: 0px;
+            width: 150px;
+            margin-left: 1px;
+            margin-right: 1px;
+            height: 100%;
+            z-index: 100;
+            border: 1px solid black;
+            float: left;
+            cursor: pointer;
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.8;
+        }
+    </style>
+    <script type="text/javascript">
+        var MyMap;
+        require(["esri/map", "esri/dijit/OverviewMap", "dojo/ready"],
+                function (Map, OverviewMap, ready) {
+                    ready(function () {
+                        MyMap = new Map("MyMapDiv");
+                        var mapUrlNames = ["ESRI_StreetMap_World_2D",
+                            "ESRI_Imagery_World_2D", "NGS_Topo_US_2D"];
+                        var layerId = ["layer1", "layer2", "layer3"];
+                        for (var i = 0; i < mapUrlNames.length; i++) {
+                            var MyTiledMapServiceLayer = new esri.layers.ArcGISTiledMapServiceLayer(
+                                "http://services.arcgisonline.com/ArcGIS/rest/services/" + mapUrlNames[i] + "/MapServer");
+                            MyTiledMapServiceLayer.id = layerId[i];
+                            if (i == 0) {
+                                MyTiledMapServiceLayer.visible = true;
+                            }
+                            else
+                            {
+                                MyTiledMapServiceLayer.visible = false;
+                            }
+                            MyMap.addLayer(MyTiledMapServiceLayer);
+                        }
+                    });
+                });
+
+        function LoadLayer(layerId) {
+            var layersId = MyMap.layerIds;
+            for (var i = 0; i < layersId.length; i++) {
+                if (layersId[i] === layerId) {
+                    MyMap.getLayer(layersId[i]).setVisibility(true);
+                }
+                else {
+                    MyMap.getLayer(layersId[i]).setVisibility(false);
+                }
+            }
+        }       
+
+        //function 
+
+        function LoadBaseMap(divId, mapUrl) {
+            $('.BaseMapDivClass').css({ "border-color": "black", "opacity": "0.8" });
+            var id = "";
+            id = '#' + divId;
+            $(id).css({ "border-color": "red", "opacity": "1" });
+        };
+
+        //require(["dojo/ready"], function (ready) {
+        //    ready(LoadBaseMap('FirstBaseMapDiv', 'http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer'));
+        //});
+
+        //dojo.ready()的用法，加载
+        //The first method of writing
+        //dojo.ready( LoadBaseMap('FirstBaseMapDiv',
+        //    'http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer'));
+
+        //The second method of writing
+        //require(["dojo/ready"], function (ready) {
+        //    ready( LoadBaseMap('FirstBaseMapDiv','http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer'));
+        //});
+
+        //The thrid method of writing 但是ready在函数内，刚加载时不会执行。
+        //function LoadBaseMap(divId, mapUrl) {
+        //    var MyMap;
+        //    var MyTiledMapServiceLayer;
+        //    $('#MyMapDiv').empty();
+        //    require(["esri/map", "esri/dijit/OverviewMap", "esri/dijit/Scalebar", "dojo/ready"],
+        //        function (Map, OverviewMap, Scalebar, ready) {
+        //            ready(function () {
+        //                MyMap = new Map("MyMapDiv");
+        //                //MyMap.removeAllLayers();
+        //                MyTiledMapServiceLayer = new esri.layers.ArcGISTiledMapServiceLayer(mapUrl);
+        //                MyMap.addLayer(MyTiledMapServiceLayer);
+        //                //alert(MyTiledMapServiceLayer.id);
+        //                var over = {
+        //                    map: MyMap,
+        //                    attachTo: "top-right",
+        //                    visible: true,
+        //                    color: "#D84E13",
+        //                    expandFactor: 2,
+        //                    width: 200,
+        //                    height: 112,
+        //                    baseLayer: MyTiledMapServiceLayer,
+        //                };
+        //                var MapViewer = new OverviewMap(over, dojo.byId("OverViewDiv"));
+        //                MapViewer.startup();
+        //                var scalebar = new Scalebar(
+        //                {
+        //                    map: MyMap,
+        //                    attachTo: "bottom-left",
+        //                    scalebarUnit: "metric",
+        //                }, dojo.byId("scaleBarDiv"))
+        //            });
+        //        });
+        //    $('.BaseMapDivClass').css({ "border-color": "black", "opacity": "0.8" });
+        //    var id = "";
+        //    id = '#' + divId;
+        //    $(id).css({ "border-color": "red", "opacity": "1" });
+        //};
+
+    </script>
+    <meta charset="utf-8" />
+</head>
+<body class="tundra">
+    <div id="MyMapDiv" class="MapClass">
+    </div>
+    <div id="BaseMapDiv" class="BaseMapClass">
+        <div id="layer1" class="BaseMapDivClass" style="background: url('image/ESRI_StreetMap_World_2D.png'); background-size: 100% 100%;"
+            onmousedown="LoadLayer(this.id)">
+        </div>
+        <div id="layer2" class="BaseMapDivClass" style="background: url('image/ESRI_Imagery_World_2D.png'); background-size: 100% 100%;"
+            onmousedown="LoadLayer(this.id)">
+        </div>
+        <div id="layer3" class="BaseMapDivClass" style="background: url('image/NGS_Topo_US_2D.png'); background-size: 100% 100%;"
+            onmousedown="LoadLayer(this.id)">
+        </div>
+    </div>
+</body>
+</html>
