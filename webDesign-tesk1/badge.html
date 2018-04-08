@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>家族徽章展示</title>
+	<meta charset="utf-8" />
+    <style>
+        body, div, ul, li {
+            margin: 0;
+            padding: 0;
+            font-style: normal;
+            font: 12px/22px "\5B8B\4F53",Arial, Helvetica, sans-serif;
+        }
+        /* \5B8B\4F53 代表 宋体，更多中文字体转 Unicode http://www.divcss5.com/jiqiao/j325.shtml */
+        ol, ul, li {
+            list-style: none;
+        }
+
+        img {
+            border: 0;
+            vertical-align: middle;
+        }
+
+        body {
+            color: #000000; /*background:#FFF;*/
+            text-align: center;
+        }
+
+        .clear {
+            clear: both;
+            height: 1px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: -1px;
+        }
+
+        a {
+            color: #000000;
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #BA2636;
+            }
+
+        .red, .red a {
+            color: #F00;
+        }
+
+        .lan, .lan a {
+            color: #1E51A2;
+        }
+
+        .pd5 {
+            padding-top: 5px;
+        }
+
+        .dis {
+            display: block;
+        }
+
+        .undis {
+            display: none;
+        }
+
+        ul#nav {
+            width: 100%;
+            height: 60px;
+            background: #00A2CA;
+            margin: 0 auto;
+        }
+
+            ul#nav li {
+                display: inline;
+                height: 60px;
+            }
+
+                ul#nav li a {
+                    display: inline-block;
+                    padding: 0 20px;
+                    height: 60px;
+                    line-height: 60px;
+                    color: #FFF;
+                    font-family: "\5FAE\8F6F\96C5\9ED1";
+                    font-size: 16px;
+                }
+
+                    ul#nav li a:hover {
+                        background: #0095BB;
+                    }
+    </style>
+
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+            text-align: center;
+        }
+
+        #banner {
+            width: 320px;
+            height: 500px;
+            margin: 50px auto;
+            position: relative; /*相对定位,相对于.btn按钮*/
+            text-align: left;
+        }
+
+        .pic image {
+            display: block; /*默认有图片不显示*/
+            position: absolute; /*绝对定位.对应的是.pic这个div*/
+            top: 0px;
+            left: 0px;
+        }
+
+        .pic a {
+            display: none;
+        }
+
+        .pic { /*专门显现图片区*/
+            position: relative; /*相对定位.对应.pic img*/
+            border: 1px solid red;
+        }
+
+        .btn {
+            width: 150px;
+            height: 18px;
+            position: absolute; /*绝对定位相对于banner div*/
+            bottom: 5px;
+            right: 5px;
+        }
+
+            .btn ul li {
+                background-color: #000000; /*黑色*/
+                color: #ffffff;
+                list-style-type: none;
+                width: 18px;
+                height: 18px;
+                float: left;
+                border-radius: 9px; /*变成圆的*/
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer; /*鼠标移动变手指状态*/
+                margin-left: 5px;
+            }
+
+                .btn ul li.one {
+                    background-color: #ff9966;
+                }
+    </style>
+
+    <script type="text/jscript" src="/jquery-3.2.1.min.js"></script>
+
+    <script type="text/jscript">
+
+      $(function () {
+
+          $("#all li").mouseover(function () {//鼠标进入离开事件
+
+              $(this).css("background-color", "#ff00ff").siblings().css("background-color", "white");
+
+              $(this).css({ "background-color": "red", "font-size": "9px" }).siblings().hide();
+
+          });
+
+          $(window).scroll(function () {//鼠标滚动事件
+
+              var _top = $(window).scrollTop(); //获得鼠标滚动的距离
+
+          });
+
+          //手动播放图片
+
+          $(".btn ul li").hover(function () {
+
+              $(this).addClass("one").siblings().removeClass("one");
+
+              index = $(this).index();
+
+              i = index;
+
+              $(".pic a").eq(index).stop().fadeIn(500).show().siblings().stop().fadeIn(500).hide();
+
+          });
+
+          //自动播放图片
+
+          var i = 0;
+
+          var t = setInterval(autoplay, 1000);
+
+          function autoplay() {
+
+              i++;
+
+              if (i > 9) i = 0;
+
+              $(".btn ul li").eq(i).addClass("one").siblings().removeClass("one");
+
+              $(".pic a").eq(i).stop().fadeIn(500).show().siblings().stop().fadeIn(500).hide();
+
+          }
+
+          $("#banner").hover(function () {
+
+              clearInterval(t);
+
+          }, function () {
+
+              t = setInterval(autoplay, 1000);
+
+          });
+
+      });
+
+    </script>
+
+</head>
+<body background="/image/band.jpg" style="background-repeat: no-repeat; background-size:100% 100%;background-attachment:fixed ">
+
+    <ul id="nav">
+        <li><a href="/homePage.html">首页</a></li>
+        <li><a href="/Map.html">维斯特洛地图</a></li>
+        <li><a href="/badge.html">家族徽章查看</a></li>
+        <li><a href="/seson.html">分季简介</a></li>
+  
+    </ul>
+
+    <div id="banner">
+
+        <div class="pic">
+
+            <a href="#" style="display:block"><img alt="" src="/image/arryn.png" /></a>
+
+
+            <a href="#"><img alt="" src="/image/baratheon.png" /></a>
+
+            <a href="#"><img alt="" src="/image/glegane.png" /></a>
+
+            <a href="#"><img alt="" src="/image/greyjoy.png" /></a>
+
+            <a href="#"><img alt="" src="/image/lannister.png" /></a>
+
+            <a href="#"><img alt="" src="/image/mormont.png" /></a>
+
+            <a href="#"><img alt="" src="/image/stark.png" /></a>
+
+            <a href="#"><img alt="" src="/image/targaryen.png" /></a>
+
+            <a href="#"><img alt="" src="/image/tully.png" /></a>
+
+            <a href="#"><img alt="" src="/image/tyrell.png" /></a>
+
+        </div>
+
+        <div class="btn">
+
+            <ul>
+
+                <li class="one">1</li>
+
+                <li>2</li>
+
+                <li>3</li>
+
+                <li>4</li>
+
+                <li>5</li>
+
+                <li>6</li>
+
+                <li>7</li>
+
+                <li>8</li>
+
+                <li>9</li>
+
+                <li>10</li>
+
+            </ul>
+
+        </div>
+
+    </div>
+</body>
+
+</html>

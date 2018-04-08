@@ -1,0 +1,43 @@
+﻿/* CSS 布局 */
+#page_wrapper {
+	width: 840px; /* 设置页面的宽度 */
+	margin-left:auto;  /* 使页面在浏览器内水平居中 */
+	margin-right:auto;
+}
+
+#masthead {
+}
+
+#top_nav {
+}
+
+
+#container {
+	position: relative; /* 使其包含的各个分栏块可以基于该块进行绝对定位 */
+	min-height:500px; /* 设置最小高度 */
+}
+
+#left_col {
+	position: absolute; /* 与 #container 块按左上角绝对定位 */
+	left: 0px;
+	top: 0px;
+	width: 200px;
+	height:100%;
+}
+
+#page_content {
+	height:100%;
+	margin-left: 220px;
+	margin-right: 220px;
+}
+
+#right_col {
+	position: absolute; /* 与 #container 块按左上角绝对定位 */
+	right: 0px;
+	top: 0px;
+	width: 200px;
+	height:100%;
+}
+
+#footer {
+}

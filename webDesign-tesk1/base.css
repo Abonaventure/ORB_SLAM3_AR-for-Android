@@ -1,0 +1,31 @@
+﻿* {/* 清除所有元素的预定义内边距和外边距,以便设计者能够灵活控制各个元素的空白 */
+	margin:0;
+	padding:0;
+}
+
+/* 为各个区设置不同背景色,以示区分 */
+body {background-color:#FFF;}
+#masthead {	background: #b6b6b6;}
+#left_col {	background-color: #EFEFEF;}
+#page_content {	background-color: #FFFFFF;}
+#right_col {background-color: #EFEFEF;}
+#footer {background: #b6b6b6;}
+#container 
+{
+	margin:5px 0 5px 0; /* 使中间主体区与页眉、页脚之间有空白 */
+}
+body
+{
+	padding: 2px; /* 使整个页面四周有一些空白 */
+}
+#masthead,#left_col,#page_content,#right_col,#footer 
+{
+	padding:0 10px 0 10px; /* 使各区内容与其背景左、右之间有空白 */
+}
+#footer{
+	font-size: 12px;  /* 设置页脚文本格式 */
+	text-align: center;
+}
+#left_col ul,#right_col ul{
+	list-style-type: none; /* 去除导航栏中的列表标记 */
+}
