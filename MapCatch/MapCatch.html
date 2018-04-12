@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>地图抓取</title>
+    <link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.23/3.23/esri/css/esri.css">
+    <link rel="stylesheet" type="text/css" href="http://localhost/arcgis_js_api/library/3.23/3.23/dijit/themes/tundra/tundra.css">
+    <style>
+        html, body, #map {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript">
+        var dojoConfig = {
+            async: true,
+            packages: [{
+                "name": "js",
+                "location": location.pathname.replace(/\/[^/]+$/, "") + "/js"
+            }]
+        };
+    </script>
+    <script src="http://localhost/arcgis_js_api/library/3.23/3.23/init.js"></script>
+    <script>
+        var map;
+        var bdlayer;
+        //var bdlayer2;
+        //var bdlayer3;
+        var gdlayer;
+        //var gdlayer2;
+        //var gdlayer3;
+    require([
+        "esri/map",
+        "js/BaiduLayer",
+        "js/GaodeLayer",
+        "dojo/parser",
+        "dojo/domReady!"],
+    function(Map, BaiduLayer,GaodeLayer,parser) {
+        parser.parse();
+        map = new Map("map", {
+            logo: false,
+            center: [119.9, 40.7],
+            zoom: 4
+        });
+        //加载百度地图图层
+        bdlayer = new BaiduLayer( { mapType: "dark"});
+         gdlayer = new GaodeLayer({layertype:"st"});
+        map.addLayer(bdlayer);
+        map.addLayer(gdlayer);
+        bdlayer.hide();
+        gdlayer.hide();
+
+    });
+    function baidu()
+    {
+        bdlayer.show();
+        gdlayer.hide();
+    }
+    function gaode()
+    {
+        gdlayer.show();
+        bdlayer.hide();
+    }
+    </script>
+</head>
+<body class="tundra">
+    <p>
+        <button name="bt1" onclick="baidu();">百度地图</button>
+    </p>
+    <p>
+        <button name="bt2" onclick="gaode();">高德地图</button>
+    </p>
+    
+    <div id="map">
+    </div>
+</body>
+</html>
+
