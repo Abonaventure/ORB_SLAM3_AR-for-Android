@@ -24,7 +24,7 @@ To compile the project you may need to edit some configurations in the ***CMakeL
 2)download boost-1_72_0 and crack its head files(boost directory) into the following directory
  */app/src/main/cpp/boost/boost-1_72_0/
  
-3)download opencv-4.5.5-android-sdk and crack its head files(boost directory) into the following directory
+3)download opencv-4.5.5-android-sdk and crack its source files into the following directory
  */opencvLibrary/
         
 ```
