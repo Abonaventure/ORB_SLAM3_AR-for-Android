@@ -24,10 +24,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef G2O_BASE_BINARY_EDGE_H
-#define G2O_BASE_BINARY_EDGE_H
+#ifndef G2O_BASE_UNARY_EDGE_H
+#define G2O_BASE_UNARY_EDGE_H
 
 #include <iostream>
+#include <cassert>
 #include <limits>
 
 #include "base_edge.h"
@@ -38,38 +39,22 @@ namespace g2o {
 
   using namespace Eigen;
 
-  template <int D, typename E, typename VertexXi, typename VertexXj>
-  class BaseBinaryEdge : public BaseEdge<D, E>
+  template <int D, typename E, typename VertexXi>
+  class BaseUnaryEdge : public BaseEdge<D,E>
   {
     public:
-
-      typedef VertexXi VertexXiType;
-      typedef VertexXj VertexXjType;
-
-      static const int Di = VertexXiType::Dimension;
-      static const int Dj = VertexXjType::Dimension;
-
       static const int Dimension = BaseEdge<D, E>::Dimension;
       typedef typename BaseEdge<D,E>::Measurement Measurement;
-      typedef typename Matrix<double, D, Di>::AlignedMapType JacobianXiOplusType;
-      typedef typename Matrix<double, D, Dj>::AlignedMapType JacobianXjOplusType;
+      typedef VertexXi VertexXiType;
+      typedef typename Matrix<double, D, VertexXiType::Dimension>::AlignedMapType JacobianXiOplusType;
       typedef typename BaseEdge<D,E>::ErrorVector ErrorVector;
       typedef typename BaseEdge<D,E>::InformationType InformationType;
 
-      typedef Eigen::Map<Matrix<double, Di, Dj>, Matrix<double, Di, Dj>::Flags & AlignedBit ? Aligned : Unaligned > HessianBlockType;
-      typedef Eigen::Map<Matrix<double, Dj, Di>, Matrix<double, Dj, Di>::Flags & AlignedBit ? Aligned : Unaligned > HessianBlockTransposedType;
-
-      BaseBinaryEdge() : BaseEdge<D,E>(),
-      _hessianRowMajor(false),
-      _hessian(0, VertexXiType::Dimension, VertexXjType::Dimension), // HACK we map to the null pointer for initializing the Maps
-      _hessianTransposed(0, VertexXjType::Dimension, VertexXiType::Dimension),
-      _jacobianOplusXi(0, D, Di), _jacobianOplusXj(0, D, Dj)
+      BaseUnaryEdge() : BaseEdge<D,E>(),
+        _jacobianOplusXi(0, D, VertexXiType::Dimension)
       {
-        _vertices.resize(2);
+        _vertices.resize(1);
       }
-
-      virtual OptimizableGraph::Vertex* createFrom();
-      virtual OptimizableGraph::Vertex* createTo();
 
       virtual void resize(size_t size);
 
@@ -85,12 +70,12 @@ namespace g2o {
 
       //! returns the result of the linearization in the manifold space for the node xi
       const JacobianXiOplusType& jacobianOplusXi() const { return _jacobianOplusXi;}
-      //! returns the result of the linearization in the manifold space for the node xj
-      const JacobianXjOplusType& jacobianOplusXj() const { return _jacobianOplusXj;}
 
-      virtual void constructQuadraticForm() ;
+      virtual void constructQuadraticForm();
 
-      virtual void mapHessianMemory(double* d, int i, int j, bool rowMajor);
+      virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to);
+
+      virtual void mapHessianMemory(double*, int, int, bool) {assert(0 && "BaseUnaryEdge does not map memory of the Hessian");}
 
       using BaseEdge<D,E>::resize;
       using BaseEdge<D,E>::computeError;
@@ -102,17 +87,13 @@ namespace g2o {
       using BaseEdge<D,E>::_vertices;
       using BaseEdge<D,E>::_dimension;
 
-      bool _hessianRowMajor;
-      HessianBlockType _hessian;
-      HessianBlockTransposedType _hessianTransposed;
       JacobianXiOplusType _jacobianOplusXi;
-      JacobianXjOplusType _jacobianOplusXj;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-#include "base_binary_edge.hpp"
+#include "base_unary_edge.hpp"
 
 } // end namespace g2o
 
