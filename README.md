@@ -5,7 +5,7 @@ This is a Android Augmented Reality APP based on [ORB-SLAM3](https://github.com/
 ## Notice
 We thank the great contribution of [@muziyongshixin](https://github.com/muziyongshixin/ORB-SLAM2-based-AR-on-Android). 
 
-**This project may be out of date**, and I am not work on SLAM for a long time, so you can disscuss with [@Abonaventure](https://github.com/Abonaventure/ORB_SLAM3_AR-for-Android) if you have any issues or questions. 
+**This project is simple and basic**, and I am focus on SLAM algorithm, so you can disscuss with [@Abonaventure](https://github.com/Abonaventure/ORB_SLAM3_AR-for-Android) or bonaventure@163.com if you have any issues or questions. 
 
 ## Demo Videos 
 
