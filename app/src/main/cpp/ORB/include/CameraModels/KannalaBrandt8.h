@@ -16,8 +16,9 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CAMERAMODELS_PINHOLE_H
-#define CAMERAMODELS_PINHOLE_H
+#ifndef CAMERAMODELS_KANNALABRANDT8_H
+#define CAMERAMODELS_KANNALABRANDT8_H
+
 
 #include <assert.h>
 
@@ -26,7 +27,7 @@
 #include "TwoViewReconstruction.h"
 
 namespace ORB_SLAM3 {
-    class Pinhole : public GeometricCamera {
+    class KannalaBrandt8 : public GeometricCamera {
 
     friend class boost::serialization::access;
 
@@ -34,29 +35,31 @@ namespace ORB_SLAM3 {
     void serialize(Archive& ar, const unsigned int version)
     {
         ar & boost::serialization::base_object<GeometricCamera>(*this);
+        ar & const_cast<float&>(precision);
     }
 
     public:
-        Pinhole() {
-            mvParameters.resize(4);
+        KannalaBrandt8() : precision(1e-6) {
+            mvParameters.resize(8);
             mnId=nNextId++;
-            mnType = CAM_PINHOLE;
+            mnType = CAM_FISHEYE;
         }
-        Pinhole(const std::vector<float> _vParameters) : GeometricCamera(_vParameters), tvr(nullptr) {
-            assert(mvParameters.size() == 4);
+        KannalaBrandt8(const std::vector<float> _vParameters) : GeometricCamera(_vParameters), precision(1e-6), mvLappingArea(2,0) ,tvr(nullptr) {
+            assert(mvParameters.size() == 8);
             mnId=nNextId++;
-            mnType = CAM_PINHOLE;
-        }
-
-        Pinhole(Pinhole* pPinhole) : GeometricCamera(pPinhole->mvParameters), tvr(nullptr) {
-            assert(mvParameters.size() == 4);
-            mnId=nNextId++;
-            mnType = CAM_PINHOLE;
+            mnType = CAM_FISHEYE;
         }
 
-
-        ~Pinhole(){
-            if(tvr) delete tvr;
+        KannalaBrandt8(const std::vector<float> _vParameters, const float _precision) : GeometricCamera(_vParameters),
+                                                                                        precision(_precision), mvLappingArea(2,0) {
+            assert(mvParameters.size() == 8);
+            mnId=nNextId++;
+            mnType = CAM_FISHEYE;
+        }
+        KannalaBrandt8(KannalaBrandt8* pKannala) : GeometricCamera(pKannala->mvParameters), precision(pKannala->precision), mvLappingArea(2,0) ,tvr(nullptr) {
+            assert(mvParameters.size() == 8);
+            mnId=nNextId++;
+            mnType = CAM_FISHEYE;
         }
 
         cv::Point2f project(const cv::Point3f &p3D);
@@ -73,29 +76,40 @@ namespace ORB_SLAM3 {
 
 
         bool ReconstructWithTwoViews(const std::vector<cv::KeyPoint>& vKeys1, const std::vector<cv::KeyPoint>& vKeys2, const std::vector<int> &vMatches12,
-                                             Sophus::SE3f &T21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated);
+                                     Sophus::SE3f &T21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated);
 
         cv::Mat toK();
         Eigen::Matrix3f toK_();
 
         bool epipolarConstrain(GeometricCamera* pCamera2, const cv::KeyPoint& kp1, const cv::KeyPoint& kp2, const Eigen::Matrix3f& R12, const Eigen::Vector3f& t12, const float sigmaLevel, const float unc);
 
+        float TriangulateMatches(GeometricCamera* pCamera2, const cv::KeyPoint& kp1, const cv::KeyPoint& kp2,  const Eigen::Matrix3f& R12, const Eigen::Vector3f& t12, const float sigmaLevel, const float unc, Eigen::Vector3f& p3D);
+
+        std::vector<int> mvLappingArea;
+
         bool matchAndtriangulate(const cv::KeyPoint& kp1, const cv::KeyPoint& kp2, GeometricCamera* pOther,
                                  Sophus::SE3f& Tcw1, Sophus::SE3f& Tcw2,
                                  const float sigmaLevel1, const float sigmaLevel2,
-                                 Eigen::Vector3f& x3Dtriangulated) { return false;}
+                                 Eigen::Vector3f& x3Dtriangulated);
 
-        friend std::ostream& operator<<(std::ostream& os, const Pinhole& ph);
-        friend std::istream& operator>>(std::istream& os, Pinhole& ph);
+        friend std::ostream& operator<<(std::ostream& os, const KannalaBrandt8& kb);
+        friend std::istream& operator>>(std::istream& is, KannalaBrandt8& kb);
+
+        float GetPrecision(){ return precision;}
 
         bool IsEqual(GeometricCamera* pCam);
     private:
+        const float precision;
+
         //Parameters vector corresponds to
-        //      [fx, fy, cx, cy]
+        //[fx, fy, cx, cy, k0, k1, k2, k3]
+
         TwoViewReconstruction* tvr;
+
+        void Triangulate(const cv::Point2f &p1, const cv::Point2f &p2, const Eigen::Matrix<float,3,4> &Tcw1,
+                         const Eigen::Matrix<float,3,4> &Tcw2, Eigen::Vector3f &x3D);
     };
 }
 
-//BOOST_CLASS_EXPORT_KEY(ORBSLAM2::Pinhole)
 
-#endif //CAMERAMODELS_PINHOLE_H
+#endif //CAMERAMODELS_KANNALABRANDT8_H
