@@ -25,8 +25,8 @@
 ORB_SLAM3::System* SLAM=nullptr;
 #endif
 std::chrono::steady_clock::time_point t0;
-double ttrack=0;
-double imageScale=0;
+double tframe=0;
+
 
 cv::Mat Plane2World=cv::Mat::eye(4,4,CV_32F);
 cv::Mat Marker2World=cv::Mat::eye(4,4,CV_32F);
@@ -59,65 +59,24 @@ cv::Point2f Camera2Pixel(cv::Mat poseCamera,cv::Mat mk){
     );
 }
 
-/*jstring str2jstring(JNIEnv* env, const  char * pat)
-{
-    //定义java String类 strClass
-    jclass strClass = (env)->FindClass( "Ljava/lang/String;" );
-    //获取String(byte[],String)的构造器,用于将本地byte[]数组转换为一个新String
-    jmethodID ctorID = (env)->GetMethodID(strClass, "<init>" , "([BLjava/lang/String;)V" );
-    //建立byte数组
-    jbyteArray bytes = (env)->NewByteArray(strlen(pat));
-    //将char* 转换为byte数组
-    (env)->SetByteArrayRegion(bytes, 0 , strlen(pat), (jbyte*)pat);
-    // 设置String, 保存语言类型,用于byte数组转换至String时的参数
-    jstring encoding = (env)->NewStringUTF( "GB2312" );
-    //将byte数组转换为java String,并输出
-    return  (jstring)(env)->NewObject(strClass, ctorID, bytes, encoding);
-}*/
-/*
-std::string jstring2str(JNIEnv* env, jstring jstr)
-{
-    char *   rtn   =   NULL;
-    jclass   clsstring   =   env->FindClass( "java/lang/String" );
-    jstring   strencode   =   env->NewStringUTF( "GB2312" );
-    jmethodID   mid   =   env->GetMethodID(clsstring,   "getBytes" ,   "(Ljava/lang/String;)[B" );
-    jbyteArray   barr=   (jbyteArray)env->CallObjectMethod(jstr,mid,strencode);
-    jsize   alen   =   env->GetArrayLength(barr);
-    jbyte*   ba   =   env->GetByteArrayElements(barr,JNI_FALSE);
-    if (alen   >   0 )
-    {
-        rtn   =   ( char *)malloc(alen+ 1 );
-        memcpy(rtn,ba,alen);
-        rtn[alen]= 0 ;
-    }
-    env->ReleaseByteArrayElements(barr,ba, 0 );
-    std::string stemp(rtn);
-    free(rtn);
-    return    stemp;
-}*/
-
 extern "C"
 JNIEXPORT jfloatArray JNICALL
 Java_com_vslam_orbslam3_vslamactivity_VslamActivity_CVTest(JNIEnv *env, jobject instance, jlong matAddr) {
     LOGI("###gyj### come in CVTest!!!");
 #ifndef BOWISBIN
-    if(ttrack == 0)
+    if(tframe == 0)
     txt_2_bin();
-    ttrack++;
+    tframe++;
 #else
-    //string strsequence = to_string(0);
-    //string filename = to_string(ttrack);
+
     if(!SLAM)
     {
         LOGI("###gyj### First frame - SLAM system loading voc and calib data...");
-        //由于ORB_SLAM3::System（）函数在头文件声明的时候，已经对第5和第6个参数初始化（const int initFr = 0, const string &strSequence = std::string()），故调用时刻缺省这两个参数（除非要重新赋值）
+        //由于ORB_SLAM3::System（）函数在头文件声明的时候，已经对第5和第6个参数初始化（const int initFr = 0, const string &strSequence = std::string()），故调用时刻缺省这两个参数（除非要重新赋值）TrackMonocular函数也有缺省参数的用法
         //ORB_SLAM3::System构造函数中新增两个参数const int initFr和 const string &strSequence，其中initFr赋值给mpLocalMapper->mInitFr（= initFr），strSequence传递给Tracking和LocalMapping函数初始化，然而这两个参数在后面都没用到;
-        //SLAM = new ORB_SLAM3::System("/sdcard/Download/SLAM/VOC/ORBvoc.bin","/sdcard/Download/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false,0,strSequence);
-        //SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false,0,strsequence);
+        //SLAM = new ORB_SLAM3::System("/sdcard/Download/SLAM/VOC/ORBvoc.bin","/sdcard/Download/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
+        //SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
         SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
-        //SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false,0,to_string(0));
-
-        //SLAM = new ORB_SLAM3::System("/storage/emulated/0/Android/data/com.vslam.orbslam3.vslamactivity/files/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/Android/data/com.vslam.orbslam3.vslamactivity/files/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false,0,strSequence);
         //imageScale = SLAM->GetImageScale();
         LOGI("###gyj### SLAM system loaded voc and calib data.");
     }
@@ -125,82 +84,25 @@ Java_com_vslam_orbslam3_vslamactivity_VslamActivity_CVTest(JNIEnv *env, jobject 
     LOGI("###gyj###Native Start");
     //获取图像数据，这里是mono图像数据，stereo和rgbd会有所不同，需要修改JNI函数接口传入相关数据
     cv::Mat *pMat = (cv::Mat*)matAddr;
-    Mat im = pMat[0];
-    unsigned int im0=1,ims=1,nImages=1;
-    im0=sizeof(pMat[0]);
-    ims=sizeof(*pMat);
-    nImages = ims/im0;
-    LOGI("###gyj###nImages=%u,sizeof(pMat)=%u,sizeof(pMat[0])=%u",nImages,ims,im0);
     cv::Mat pose;
-    double t_resize = 0.f;
-    double t_track = 0.f;
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
-    double tframe  = std::chrono::duration_cast < std::chrono::duration < double >> (t1 - t0).count();
-    const vector<ORB_SLAM3::IMU::Point>& vImuMeas = vector<ORB_SLAM3::IMU::Point>();
-    string filename= to_string(tframe);
-    clock_t start,end;
-    start=clock();
+    tframe  = std::chrono::duration_cast < std::chrono::duration < double >> (t1 - t0).count();
+
     LOGI("###gyj### SLAM->TrackMonocular start!!!");
     // Pass the image to the SLAM system
     cout << "tframe = " << tframe << endl;
-    Sophus::SE3f Tcw_SE3f = SLAM->TrackMonocular(im,tframe); // TODO change to monocular_inertial
+    clock_t start,end;
+    start=clock();
+    //cv::Mat im = pMat[0];
+    //cv::Mat im = *pMat;
+    //Sophus::SE3f Tcw_SE3f = SLAM->TrackMonocular(im,tframe); // TODO change to monocular_inertial
+    Sophus::SE3f Tcw_SE3f = SLAM->TrackMonocular(*pMat,tframe); // TODO change to monocular_inertial
     //Sophus::SE3f Tcw_SE3f = SLAM->TrackMonocular(*pMat,tframe,vImuMeas,filename); // TODO change to monocular_inertial
     Eigen::Matrix4f Tcw_Matrix = Tcw_SE3f.matrix();
     cv::eigen2cv(Tcw_Matrix, pose);
     end = clock();
     LOGI("###gyj### SLAM->TrackMonocular over!!!Get Pose Use Time=%f\n",((double)end-start)/CLOCKS_PER_SEC);
-
-    //for(int ni=0; ni<nImages; ni++)
- /*   int ni=0;
-    while(NULL!= &pMat[ni])
-    {
-        ni++;
-        *//*LOGI("###gyj### ni==%d,pMat[%d]\n",ni,ni);*//*
-
-    }
-    LOGI("###gyj### total ni_max==%d,pMat[%d]\n",ni,ni);*/
-   /* while(NULL!= &pMat[ni])
-    {
-        // Read image from file
-        im = pMat[ni]; //,cv::IMREAD_UNCHANGED);
-        std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
-        double tframe  = std::chrono::duration_cast < std::chrono::duration < double >> (t - t0).count();
-        if(im.empty())
-        {
-            //cerr << endl << "Failed to load image at: " << vstrImageFilenames[ni] << endl;
-            //return -1;
-            cerr << endl << "Failed to load image at: " << tframe << endl;
-            //return;
-        }
-
-        std::chrono::steady_clock::time_point t_Start_Resize = std::chrono::steady_clock::now();
-        if(imageScale != 1.f)
-        {
-            int width = im.cols * imageScale;
-            int height = im.rows * imageScale;
-            cv::resize(im, im, cv::Size(width, height));
-        }
-        std::chrono::steady_clock::time_point t_End_Resize = std::chrono::steady_clock::now();
-        t_resize = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(t_End_Resize - t_Start_Resize).count();
-        //SLAM->InsertResizeTime(t_resize);
-        //clock_t start,end;
-        //start=clock();
-       LOGI("###gyj### SLAM->TrackMonocular start!!!");
-        // Pass the image to the SLAM system
-        cout << "tframe = " << tframe << endl;
-        std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
-        //SLAM->TrackMonocular(im,tframe); // TODO change to monocular_inertial
-        Sophus::SE3f Tcw_SE3f = SLAM->TrackMonocular(im,tframe); // TODO change to monocular_inertial
-        std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
-        Eigen::Matrix4f Tcw_Matrix = Tcw_SE3f.matrix();
-        cv::eigen2cv(Tcw_Matrix, pose);
-        //end = clock();
-        t_track = t_resize + std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(t2 - t1).count();
-        //SLAM->InsertTrackTime(t_track);
-        LOGI("###gyj### SLAM->TrackMonocular over!!!Get Pose Use Time=%f\n",((double)t_track)/CLOCKS_PER_SEC);
-        ni++;
-    }*/
 
     static bool instialized =false;
     static bool markerDetected =false;
