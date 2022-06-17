@@ -71,25 +71,16 @@ Java_com_vslam_orbslam3_vslamactivity_VslamActivity_CVTest(JNIEnv *env, jobject 
 
     if(!SLAM)
     {
-        LOGI("###gyj### First frame - SLAM system loading voc and calib data...");
-        //由于ORB_SLAM3::System（）函数在头文件声明的时候，已经对第5和第6个参数初始化（const int initFr = 0, const string &strSequence = std::string()），故调用时刻缺省这两个参数（除非要重新赋值）TrackMonocular函数也有缺省参数的用法
-        //ORB_SLAM3::System构造函数中新增两个参数const int initFr和 const string &strSequence，其中initFr赋值给mpLocalMapper->mInitFr（= initFr），strSequence传递给Tracking和LocalMapping函数初始化，然而这两个参数在后面都没用到;
-        //SLAM = new ORB_SLAM3::System("/sdcard/Download/SLAM/VOC/ORBvoc.bin","/sdcard/Download/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
-        //SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
-        SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
-        //imageScale = SLAM->GetImageScale();
-        LOGI("###gyj### SLAM system loaded voc and calib data.");
+      SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
+        
     }
 
-    LOGI("###gyj###Native Start");
-    //获取图像数据，这里是mono图像数据，stereo和rgbd会有所不同，需要修改JNI函数接口传入相关数据
     cv::Mat *pMat = (cv::Mat*)matAddr;
     cv::Mat pose;
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     tframe  = std::chrono::duration_cast < std::chrono::duration < double >> (t1 - t0).count();
 
-    LOGI("###gyj### SLAM->TrackMonocular start!!!");
     // Pass the image to the SLAM system
     cout << "tframe = " << tframe << endl;
     clock_t start,end;
@@ -102,7 +93,7 @@ Java_com_vslam_orbslam3_vslamactivity_VslamActivity_CVTest(JNIEnv *env, jobject 
     Eigen::Matrix4f Tcw_Matrix = Tcw_SE3f.matrix();
     cv::eigen2cv(Tcw_Matrix, pose);
     end = clock();
-    LOGI("###gyj### SLAM->TrackMonocular over!!!Get Pose Use Time=%f\n",((double)end-start)/CLOCKS_PER_SEC);
+    LOGI("SLAM->TrackMonocular over!!!Get Pose Use Time=%f\n",((double)end-start)/CLOCKS_PER_SEC);
 
     static bool instialized =false;
     static bool markerDetected =false;
