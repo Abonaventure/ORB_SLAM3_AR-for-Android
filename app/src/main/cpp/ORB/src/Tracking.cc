@@ -52,19 +52,14 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpAtlas(pAtlas), mnLastRelocFrameId(0), time_recently_lost(5.0),
     mnInitialFrameId(0), mbCreatedMap(false), mnFirstFrameId(0), mpCamera2(nullptr), mpLastKeyFrame(static_cast<KeyFrame*>(NULL))
 {
-    LOGI("###gyj### Tracking() mpORBVocabulary =%u mpKeyFrameDB=%u",mpORBVocabulary,mpKeyFrameDB);
     // Load camera parameters from settings file
     if(settings){
-        LOGI("###gyj### settings =1 start  newParameterLoader(settings)");
         newParameterLoader(settings);
     }
     else{
-        LOGI("###gyj### settings =0 start  ParseCamParamFile(fSettings)");
         cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
         bool b_parse_cam = ParseCamParamFile(fSettings);
-        LOGI("###gyj### ParseCamParamFile(fSettings) b_parse_cam=%u mpCamera =%u &mDistCoef=%u mbf=%f mThDepth=%f",b_parse_cam,mpCamera,&mDistCoef,mbf,mThDepth);
-        LOGI("###gyj### ParseCamParamFile(fSettings) mpAtlas->AddCamera(mpCamera) mpCamera=%u mpAtlas=%u",mpCamera,mpAtlas);
         if(!b_parse_cam)
         {
             std::cout << "*Error with the camera parameters in the config file*" << std::endl;
@@ -625,23 +620,17 @@ void Tracking::newParameterLoader(Settings *settings) {
     mpImuCalib = new IMU::Calib(Tbc,Ng*sf,Na*sf,Ngw/sf,Naw/sf);
 
     mpImuPreintegratedFromLastKF = new IMU::Preintegrated(IMU::Bias(),*mpImuCalib);
-
-    LOGI("###gyj### Tracking::newParameterLoader(Settings *settings) mpCamera =%u &mDistCoef=%u mbf=%f mThDepth=%f",mpCamera,&mDistCoef,mbf,mThDepth);
 }
 
 bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
 {
-    LOGI("###gyj### come in ParseCamParamFile() !!!");
     mDistCoef = cv::Mat::zeros(4,1,CV_32F);
     cout << endl << "Camera Parameters: " << endl;
     bool b_miss_params = false;
 
     string sCameraName = fSettings["Camera.type"];
-    //cout << "###gyj### sCameraName== " <<sCameraName<< endl;
-    LOGI("###gyj### sCameraName = %s!!!",sCameraName.c_str());
     if(sCameraName == "PinHole")
     {
-        LOGI("###gyj### come in sCameraName == \"PinHole\" branch !!!");
         float fx, fy, cx, cy;
         mImageScale = 1.f;
 
@@ -763,12 +752,8 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
         }
 
         vector<float> vCamCalib{fx,fy,cx,cy};
-        LOGI("###gyj### ParseCamParamFile() sCameraName == PinHole vCamCalib[0]=%f vCamCalib[1]=%f vCamCalib[2]=%f vCamCalib[3]=%f ",vCamCalib[0],vCamCalib[1],vCamCalib[2],vCamCalib[3]);
-
         mpCamera = new Pinhole(vCamCalib);
-        LOGI("###gyj### ParseCamParamFile()sCameraName == PinHole  initial mpCamera=%u",mpCamera);
         mpCamera = mpAtlas->AddCamera(mpCamera);
-        LOGI("###gyj### ParseCamParamFile()sCameraName == PinHole  mpAtlas->AddCamera(mpCamera) mpCamera=%u mpAtlas=%u",mpCamera,mpAtlas);
 
        /* std::cout << "- Camera: Pinhole" << std::endl;
         std::cout << "- Image scale: " << mImageScale << std::endl;
@@ -800,7 +785,6 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
     }
     else if(sCameraName == "KannalaBrandt8")
     {
-        LOGI("###gyj### come in sCameraName == \"KannalaBrandt8\" branch !!!");
         float fx, fy, cx, cy;
         float k1, k2, k3, k4;
         mImageScale = 1.f;
@@ -911,12 +895,9 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
             }
 
             vector<float> vCamCalib{fx,fy,cx,cy,k1,k2,k3,k4};
-            LOGI("###gyj### ParseCamParamFile() sCameraName == KannalaBrandt8 vCamCalib[0]=%f vCamCalib[1]=%f vCamCalib[2]=%f vCamCalib[3]=%f ",vCamCalib[0],vCamCalib[1],vCamCalib[2],vCamCalib[3]);
-
             mpCamera = new KannalaBrandt8(vCamCalib);
-            LOGI("###gyj### ParseCamParamFile()sCameraName == KannalaBrandt8  initial mpCamera=%u",mpCamera);
             mpCamera = mpAtlas->AddCamera(mpCamera);
-            LOGI("###gyj### ParseCamParamFile()sCameraName == KannalaBrandt8  mpAtlas->AddCamera(mpCamera) mpCamera=%u mpAtlas=%u",mpCamera,mpAtlas);
+            
             std::cout << "- Camera: Fisheye" << std::endl;
             std::cout << "- Image scale: " << mImageScale << std::endl;
             std::cout << "- fx: " << fx << std::endl;
@@ -1234,7 +1215,7 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
     {
         return false;
     }
-    LOGI("###gyj### ParseCamParamFile() end!!!");
+    
     return true;
 }
 
@@ -1607,31 +1588,21 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im, const double &times
 
     if (mSensor == System::MONOCULAR)
     {
-        LOGI("###gyj###mSensor == System::MONOCULAR start!!!");
-        LOGI("###gyj###mState ==%d",mState);
         if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET ||(lastID - initID) < mMaxFrames){
-            LOGI("###gyj###mCurrentFrame come in first branch!!!");
-            LOGI("###gyj### GrabImageMonocular() mpORBVocabulary =%u mpKeyFrameDB=%u",mpORBVocabulary,mpKeyFrameDB);
-            LOGI("###gyj### &ImGray=%u timestamp=%lf mpIniORBextractor=%u mpORBVocabulary=%u mpCamera=%u &mDistCoef=%u mbf=%f mThDepth=%f !!!",&mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mpCamera,&mDistCoef,mbf,mThDepth);
+            
             mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
-
         }
         else
-            LOGI("###gyj###mCurrentFrame come in second branch!!!");
             mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
-            
-        LOGI("###gyj###mSensor == System::MONOCULAR over!!!");
     }
     else if(mSensor == System::IMU_MONOCULAR)
     {
-        LOGI("###gyj###mSensor == System::IMU_MONOCULAR start!!!");
         if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET)
         {
             mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth,&mLastFrame,*mpImuCalib);
         }
         else
             mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth,&mLastFrame,*mpImuCalib);
-        LOGI("###gyj###mSensor == System::IMU_MONOCULAR over!!!");
     }
 
     if (mState==NO_IMAGES_YET)
