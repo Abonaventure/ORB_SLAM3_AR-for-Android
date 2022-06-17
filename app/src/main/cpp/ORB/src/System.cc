@@ -86,7 +86,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         mStrLoadAtlasFromFile = settings_->atlasLoadFile();
         mStrSaveAtlasToFile = settings_->atlasSaveFile();
-        LOGI("###gyj### !node.empty() && node.isString() && node.string() == \"1.0\"settings_->cameraType() =%d",settings_->cameraType() );
         cout << (*settings_) << endl;
     }
     else{
@@ -102,7 +101,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         {
             mStrSaveAtlasToFile = (string)node;
         }
-        LOGI("###gyj### node.empty() || !node.isString() || node.string() != \"1.0\" settings_=%d",settings_);
 
     }
 
@@ -125,8 +123,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpVocabulary = new ORBVocabulary();
         //bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
         bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
-        LOGI("###gyj### mStrLoadAtlasFromFile.empty()=1 bVocLoad =%u mpVocabulary=%u",bVocLoad,mpVocabulary);
-        LOGI("###gyj### mStrLoadAtlasFromFile.empty()=1 strVocFile=%s",&strVocFile);
         if(!bVocLoad)
         {
             cerr << "Wrong path to vocabulary. " << endl;
@@ -150,9 +146,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpVocabulary = new ORBVocabulary();
         //bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
         bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
-
-        LOGI("###gyj### mStrLoadAtlasFromFile.empty()=0 bVocLoad =%u mpVocabulary=%u",bVocLoad,mpVocabulary);
-        LOGI("###gyj### mStrLoadAtlasFromFile.empty()=0 strVocFile=%s",&strVocFile);
         if(!bVocLoad)
         {
             cerr << "Wrong path to vocabulary. " << endl;
@@ -479,9 +472,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     if (mSensor == System::IMU_MONOCULAR)
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);
-    LOGI("###gyj###GrabImageMonocular start!!!");
     Sophus::SE3f Tcw = mpTracker->GrabImageMonocular(imToFeed,timestamp,filename);
-    LOGI("###gyj###GrabImageMonocular over!!!");
     unique_lock<mutex> lock2(mMutexState);
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
