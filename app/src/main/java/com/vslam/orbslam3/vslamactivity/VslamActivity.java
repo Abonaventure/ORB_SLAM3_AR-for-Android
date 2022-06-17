@@ -137,7 +137,7 @@ public class VslamActivity extends Activity implements CameraBridgeViewBase.CvCa
         //String filepath = "/sdcard/Download/SLAM/Calibration/PARAconfig.yaml";
         String filepath = "/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml";
         //String filepath  = getExternalFilesDir("SLAM").getPath() + "/Calibration/PARAconfig.yaml";
-        System.out.println("###gyj### PARAconfig.yaml filepath="+filepath);
+        System.out.println("PARAconfig.yaml filepath="+filepath);
         try {
             readFileOnLine(filepath);
         } catch (Exception e) {
@@ -202,15 +202,11 @@ public class VslamActivity extends Activity implements CameraBridgeViewBase.CvCa
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        System.out.println("###gyj### Come in onCameraFrame" );
         Mat rgb = inputFrame.rgba();
-        System.out.println("###gyj### CVTest start!!!");
         float[] poseMatrix = CVTest(rgb.getNativeObjAddr()); //从slam系统获得相机位姿矩阵
-        System.out.println("###gyj### CVTest over!!!");
 
         if (poseMatrix.length != 0) {
             double[][] pose = new double[4][4];
-            System.out.println("###gyj###one posematrix is below========");
             for (int i = 0; i < poseMatrix.length / 4; i++) {
                 for (int j = 0; j < 4; j++) {
 
@@ -225,7 +221,7 @@ public class VslamActivity extends Activity implements CameraBridgeViewBase.CvCa
                 System.out.print("\n");
             }
 
-            System.out.println("###gyj### Total count =" + count + "frame,SCALE=============" + SCALE);
+            System.out.println("Total count =" + count + "frame,SCALE=============" + SCALE);
             double[][] R = new double[3][3];
             double[] T = new double[3];
 
@@ -262,7 +258,7 @@ public class VslamActivity extends Activity implements CameraBridgeViewBase.CvCa
     protected void onCameraPermissionGranted() {
         List<? extends CameraBridgeViewBase> cameraViews = getCameraViewList();
         if (cameraViews == null) {
-            System.out.println("###gyj### CameraBridgeViewBase> cameraViews == null!!!");
+            System.out.println("CameraBridgeViewBase> cameraViews == null!!!");
             return;
         }
         for (CameraBridgeViewBase cameraBridgeViewBase: cameraViews) {
