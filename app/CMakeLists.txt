@@ -13,7 +13,9 @@ include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -frtti -fopenmp -static-openmp")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -frtti -fopenmp -static-openmp")
 
 find_library( # Sets the name of the path variable.
               log-lib
@@ -44,6 +46,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src/main/cpp/openssl/openssl]]
 	${PROJECT_SOURCE_DIR}/src/main/cpp/openssl/openssl-1.0.2s
 	${PROJECT_SOURCE_DIR}/src/main/cpp/openssl/openssl-1.0.2s/openssl
+	${PROJECT_SOURCE_DIR}/src/main/cpp/opencv/opencv-4.5.5/include
 
    #[[ ${PROJECT_SOURCE_DIR}/src/main/cpp/ORB/Thirdparty/g2o/g2o/types
     ${PROJECT_SOURCE_DIR}/src/main/cpp/ORB/Thirdparty/g2o/g2o/core
@@ -250,12 +253,31 @@ target_link_libraries(ORBSLAM3
 		)
 
 # Set the location of the OpenCV 3.2.0 builts
-set( OpenCV_DIR D:/OpenCV/opencv-4.5.5-android-sdk/sdk/native/jni )
-# Retrieve OpenCV_INCLUDE_DIRS and OpenCV_LIBS variables from OpenCVConfig.cmake
-find_package(OpenCV REQUIRED)
+#[[set( OpenCV_DIR D:/OpenCV/opencv-4.5.5-android-sdk/sdk/native/jni )
+find_package(OpenCV REQUIRED )
+if(OpenCV_FOUND)
+	include_directories(${OpenCV_INCLUDE_DIRS})
+	message(STATUS "OpenCV library status:")
+	message(STATUS "    version: ${OpenCV_VERSION}")
+	message(STATUS "    libraries: ${OpenCV_LIBS}")
+	message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
+else(OpenCV_FOUND)
+	message(FATAL_ERROR "OpenCV library not found")
+endif(OpenCV_FOUND)
+
+
 message(STATUS "Configured OpenCV include directories: ${OpenCV_INCLUDE_DIRS}")
 include_directories(${OpenCV_INCLUDE_DIRS})
-message(STATUS "Configured OpenCV libraries: ${OpenCV_LIBS}")
+message(STATUS "Configured OpenCV libraries: ${OpenCV_LIBS}")]]
+
+# set opencv include directory
+# include_directories(${PROJECT_SOURCE_DIR}/src/main/cpp/opencv/opencv-4.5.5/include)
+
+# set opencv shared library
+add_library(opencv-lib SHARED IMPORTED)
+set_target_properties(opencv-lib PROPERTIES IMPORTED_LOCATION
+		${CMAKE_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI}/libopencv_java4.so)
+
 
 target_link_libraries( # Specifies the target library.
                        native-lib
@@ -266,4 +288,6 @@ target_link_libraries( # Specifies the target library.
                        ORBSLAM3
 
                        # Links the target library to opencv static libs
-                       ${OpenCV_LIBS})
+                       #${OpenCV_LIBS}
+		               opencv-lib
+		)
