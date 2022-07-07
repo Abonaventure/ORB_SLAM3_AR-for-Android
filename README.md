@@ -26,12 +26,6 @@ To compile the project you may need to edit some configurations in the ***CMakeL
  
 3)download opencv-4.5.5-android-sdk and crack its source files into the following directory
  */opencvLibrary/
- 
-4)download opencv-4.5.5-android-sdk and crack its include files and libs files into the following directory
-4.1)from opencv-4.5.5-android-sdk/sdk/native/jni/include/ to
- */app/src/main/cpp/opencv/opencv-4.5.5/include/
-4.2)from opencv-4.5.5-android-sdk/sdk/native/libs/ to
- */app/src/main/jniLibs/
         
 ```
 (2)To run this APP you need to copy the *./SLAM* folder into your mobile phones, which contains the vocabulary file(ORBvoc.bin) and camera Calibration file(PARAconfig.yaml). Then you need to change the row " SLAM = new ORB_SLAM3::System("/storage/emulated/0/SLAM/VOC/ORBvoc.bin","/storage/emulated/0/SLAM/Calibration/PARAconfig.yaml",ORB_SLAM3::System::MONOCULAR,false);
